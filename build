@@ -1,0 +1,2 @@
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+g++ -o app app.cpp $(pkg-config --cflags --libs opencv4) $(pkg-config --cflags --libs libmongocxx) -I/usr/include/mongocxx -L/usr/lib -lmongocxx -lbsoncxx -I. -I include

@@ -1,0 +1,3 @@
+sudo apt-get install libmongoc-dev
+mongodb
+sudo apt-get install libmongocxx-dev
