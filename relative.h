@@ -4,8 +4,9 @@
 #include <vector>
 #include <filesystem>
 
-namespace fs = std::filesystem;
+#include <db.h>
 
+namespace fs = std::filesystem;
 
 #ifndef PIX_SERVER_H
 #define PIX_SERVER_H
@@ -42,12 +43,13 @@ float pDiv(int a, int b)
 class pix_server
 {
 public:
-    pix_server(){
-
+    pix_server()
+    {
     }
 
-    void test(int x,int y){
-        std::vector<int> i = relative_cord(x,y);
+    void test(int x, int y)
+    {
+        std::vector<int> i = relative_cord(x, y);
         std::cout << i[0] << " " << i[1] << " " << i[2] << " " << i[3] << " x:" << x << " y:" << y << "\n";
     }
 
@@ -55,7 +57,15 @@ public:
     {
         std::vector r_crd = relative_cord(x, y);
         // std::cout << r_crd[0] << " " << r_crd[1] << " " << r_crd[2] << " " << r_crd[3] << " x:" << x << " y:" << y << "\n";
-        return get_img(r_crd[2], r_crd[3]).at<cv::Vec3b>(r_crd[1], r_crd[0]);
+
+        cv::Mat im = get_img(r_crd[2], r_crd[3]);
+
+        if (im.empty())
+        {
+            throw ("imag error 678");
+        }
+
+        return im.at<cv::Vec3b>(r_crd[1], r_crd[0]);
     }
 
     void put_pix(int &x, int &y, const cv::Vec3b &pix)
@@ -85,26 +95,22 @@ public:
         // std::string s;
         // std::cin >> s;
 
-    if(fs::exists(new_tiles + st + ".png")){
-        img = cv::imread(new_tiles + st + ".png");
-        // cv::imshow("test",img);
-        // cv::waitKey(0);
-    }else if(fs::exists(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png")){
-        img = cv::imread(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png");
-        // cv::imshow("test",img);
-        // cv::waitKey(0);
-    }else{
+        if (fs::exists(new_tiles + st + ".png"))
+        {
+            img = cv::imread(new_tiles + st + ".png");
+        }
+        else if (fs::exists(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png"))
+        {
+            img = cv::imread(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png");
+        }
+        else
+        {
+            img = whiteImage;
+            sv = 0;
+        }
 
-        // std::cout << real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png" << '\n';
-        img = whiteImage;
-        sv = 0;
-        // cv::imshow("test",img);
-        // cv::waitKey(0);
-    }
-
-
-        if(tiles_sv[0])
-        cv::imwrite(new_tiles + tiles_key[0] + ".png", tiles_val[0]);
+        if (tiles_sv[0])
+            cv::imwrite(new_tiles + tiles_key[0] + ".png", tiles_val[0]);
 
         tiles_key.erase(tiles_key.begin());
         tiles_key.push_back(st);
@@ -121,23 +127,17 @@ private:
     std::vector<std::string> tiles_key = {"", "", "", "", ""};
     std::vector<bool> tiles_sv = {0, 0, 0, 0, 0};
 
-
     std::vector<int> relative_cord(int &x_, int &y_)
-{
+    {
 
-    int tilex = int(pDiv(x_, 256)) + min_x;
-    int pixx = pMod((x_ - 256), 256);
+        int tilex = int(pDiv(x_, 256)) + min_x;
+        int pixx = pMod((x_ - 256), 256);
 
-    int tiley = int(pDiv(y_, 256)) + min_y;
-    int pixy = pMod((y_ - 256), 256);
+        int tiley = int(pDiv(y_, 256)) + min_y;
+        int pixy = pMod((y_ - 256), 256);
 
-    return {pixx, pixy, tilex, tiley};
-}
+        return {pixx, pixy, tilex, tiley};
+    }
 };
 
-
-
 #endif
-
-
-

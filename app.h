@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <stack>
 #include <appUtil.h>
-#include <db.h>
+// #include <db.h>
 #include <relative.h>
 
 class process
@@ -42,8 +42,9 @@ public:
             {
                 pixel = pix.get_pix(x, y);
             }
-            catch (const std::exception &e)
+            catch (const std::string st)
             {
+                std::cout << st << "\n";
                 client.recErr(x,y);
                 break;
             }
