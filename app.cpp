@@ -107,12 +107,16 @@ int main()
 
     ThreadPool pool(cores/2);
 
+    std::vector<int> trk;
+
     for (int e = 0; e < 256; e = e + 1)
         for (int i = e; i < (766464); i = i + 256)
         {
+            trk.push_back(i);
             std::cout << i / 256 << std::endl;
             pool.enqueue([i] {
                 prs(i);
+                std::cout << "completed: " << i << std::endl;
             });
         }
 

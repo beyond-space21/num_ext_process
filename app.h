@@ -13,16 +13,15 @@ public:
     process(int x_temp)
     {
         x = x_temp;
-
-        y = findDocumentWithLargestRootY(x);
-        trk = get_track(x);
+        y = client.findDocumentWithLargestRootY(x);
+        trk = client.getTrack(x);
 
         if (y == -1)
         {
             if (trk == -1)
             {
                 y = 0;
-                start_track(x, 0);
+                client.startTrack(x, 0);
             }
             else
                 std::cout << "y is -1 but get_track(" << x << ") exists" << '\n';
@@ -53,7 +52,7 @@ public:
 
         std::cout << "count: " << count << std::endl;
 
-        end_track(x,y);
+        client.endTrack(x,y);
     }
 
 private:
@@ -133,5 +132,7 @@ private:
     int x;
     int y;
     int trk;
+
+    MongoDBClient client;
 };
 
