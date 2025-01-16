@@ -19,8 +19,8 @@ int max_y = 125168;
 int total_width = (max_x - min_x + 3) * 255;
 int total_height = (max_y - min_y + 3) * 255;
 
-std::string real_tiles = "/home/anand/mypropertyqr/ext_num/tiles/";
-std::string new_tiles = "/home/anand/mypropertyqr/ext_num/new_tiles/";
+std::string real_tiles = "/home/anand/mypropertyqr/num_ext_process/tiles/";
+std::string new_tiles = "/home/anand/mypropertyqr/num_ext_process/new_tiles/";
 
 cv::Mat whiteImage(256, 256, CV_8UC3, cv::Scalar(255, 255, 255));
 
@@ -51,10 +51,10 @@ public:
         std::cout << i[0] << " " << i[1] << " " << i[2] << " " << i[3] << " x:" << x << " y:" << y << "\n";
     }
 
-    cv::Vec3b get_pix(int &x, int &y)
+    cv::Vec3b get_pix(int x, int y)
     {
         std::vector r_crd = relative_cord(x, y);
-        // std::cout << r_crd[0] << " " << r_crd[1] << " " << r_crd[2] << " " << r_crd[3] << " x:" << x << " y:" << y << "\n";
+        std::cout << r_crd[0] << " " << r_crd[1] << " " << r_crd[2] << " " << r_crd[3] << " x:" << x << " y:" << y << "\n";
         return get_img(r_crd[2], r_crd[3]).at<cv::Vec3b>(r_crd[1], r_crd[0]);
     }
 
@@ -87,13 +87,19 @@ public:
 
     if(fs::exists(new_tiles + st + ".png")){
         img = cv::imread(new_tiles + st + ".png");
+        cv::imshow("test",img);
+        cv::waitKey(0);
     }else if(fs::exists(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png")){
         img = cv::imread(real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png");
-        // cv::imshow("test",img);
-        // cv::waitKey(0);
+        cv::imshow("test",img);
+        cv::waitKey(0);
     }else{
+
+        std::cout << real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png" << '\n';
         img = whiteImage;
         sv = 0;
+        cv::imshow("test",img);
+        cv::waitKey(0);
     }
 
 

@@ -7,45 +7,54 @@
 #include <mongocxx/options/find.hpp>
 #include <string>
 
-class MongoDBClient {
+class MongoDBClient
+{
 public:
     // Constructor to initialize the client with a unique connection
-    MongoDBClient(const std::string& uri = "mongodb://localhost:27017") 
+    MongoDBClient(const std::string &uri = "mongodb://localhost:27017")
         : client(mongocxx::uri{uri}) {}
 
     // Function to access a collection
-    mongocxx::collection getCollection(const std::string& db_name, const std::string& coll_name) {
+    mongocxx::collection getCollection(const std::string &db_name, const std::string &coll_name)
+    {
         return client[db_name][coll_name];
     }
 
     // Function to find the document with the largest root_y for a given root_x
-    int findDocumentWithLargestRootY(int root_x) {
-        try {
+    int findDocumentWithLargestRootY(int root_x)
+    {
+        try
+        {
             bsoncxx::builder::stream::document filter;
             filter << "root_x" << root_x;
 
             mongocxx::options::find options;
             options.sort(bsoncxx::builder::stream::document{} << "root_y" << -1 << bsoncxx::builder::stream::finalize)
-                   .limit(1);
+                .limit(1);
 
             mongocxx::collection collection = getCollection("survey_cad", "num");
             auto cursor = collection.find(filter.view(), options);
 
-            if (cursor.begin() != cursor.end()) {
+            if (cursor.begin() != cursor.end())
+            {
                 auto doc = *cursor.begin();
                 int highest_root_y = doc["root_y"].get_int32().value;
                 return highest_root_y;
             }
             return -1; // No document found
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error finding document: " << e.what() << std::endl;
             return -1;
         }
     }
 
     // Function to insert a document
-    void insertDocument(const std::string& data, int data_x, int data_y, int root_x, int root_y) {
-        try {
+    void insertDocument(const std::string &data, int data_x, int data_y, int root_x, int root_y)
+    {
+        try
+        {
             bsoncxx::builder::stream::document document{};
             document << "data" << data
                      << "data_x" << data_x
@@ -55,14 +64,18 @@ public:
 
             mongocxx::collection collection = getCollection("survey_cad", "num");
             collection.insert_one(document.view());
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error inserting document: " << e.what() << std::endl;
         }
     }
 
     // Function to manage tracking documents
-    void startTrack(int root_x, int root_y) {
-        try {
+    void startTrack(int root_x, int root_y)
+    {
+        try
+        {
             bsoncxx::builder::stream::document document{};
             document << "type" << "track"
                      << "root_x" << root_x
@@ -70,33 +83,43 @@ public:
 
             mongocxx::collection collection = getCollection("survey_cad", "num_track_det");
             collection.insert_one(document.view());
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error starting track: " << e.what() << std::endl;
         }
     }
 
-    int getTrack(int root_x) {
-        try {
+    int getTrack(int root_x)
+    {
+        try
+        {
             bsoncxx::builder::stream::document filter;
             filter << "root_x" << root_x << "type" << "track";
 
             mongocxx::collection collection = getCollection("survey_cad", "num_track_det");
             auto cursor = collection.find(filter.view());
 
-            for (auto&& doc : cursor) {
-                if (doc["root_y"]) {
+            for (auto &&doc : cursor)
+            {
+                if (doc["root_y"])
+                {
                     return doc["root_y"].get_int32().value;
                 }
             }
             return -1; // Not found
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error getting track: " << e.what() << std::endl;
             return -1;
         }
     }
 
-    void endTrack(int root_x, int new_root_y) {
-        try {
+    void endTrack(int root_x, int new_root_y)
+    {
+        try
+        {
             bsoncxx::builder::stream::document filter;
             filter << "root_x" << root_x << "type" << "track";
 
@@ -108,11 +131,31 @@ public:
             mongocxx::collection collection = getCollection("survey_cad", "num_track_det");
             auto result = collection.update_one(filter.view(), update.view());
 
-            if (!result || result->modified_count() == 0) {
+            if (!result || result->modified_count() == 0)
+            {
                 std::cerr << "Track not updated: root_x = " << root_x << std::endl;
             }
-        } catch (const std::exception& e) {
+        }
+        catch (const std::exception &e)
+        {
             std::cerr << "Error ending track: " << e.what() << std::endl;
+        }
+    }
+
+    void recErr(int x, int y)
+    {
+        try
+        {
+            bsoncxx::builder::stream::document document{};
+            document << "x" << x
+                     << "y" << y;
+
+            mongocxx::collection collection = getCollection("survey_cad", "errRec");
+            collection.insert_one(document.view());
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Error inserting document: " << e.what() << std::endl;
         }
     }
 
