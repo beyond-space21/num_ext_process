@@ -98,8 +98,8 @@ public:
         // std::cout << real_tiles + std::to_string(x) + '/' + std::to_string(y) + ".png" << '\n';
         img = whiteImage;
         sv = 0;
-        cv::imshow("test",img);
-        cv::waitKey(0);
+        // cv::imshow("test",img);
+        // cv::waitKey(0);
     }
 
 
