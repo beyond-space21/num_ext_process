@@ -105,12 +105,12 @@ int main()
     size_t cores = std::thread::hardware_concurrency();
     std::cout << "Using " << cores << " cores for the thread pool." << std::endl;
 
-    ThreadPool pool(cores/2);
+    ThreadPool pool(22);
 
     std::vector<int> trk;
 
     for (int e = 0; e < 256; e = e + 1)
-        for (int i = e; i < (766464); i = i + 256)
+        for (int i = e; i < (383232); i = i + 256) //766464
         {
             trk.push_back(i);
             std::cout << i / 256 << std::endl;

@@ -61,7 +61,7 @@ public:
         cv::Mat im = get_img(r_crd[2], r_crd[3]);
 
         if (im.empty())
-        {
+        {   
             throw ("imag error 678");
         }
 

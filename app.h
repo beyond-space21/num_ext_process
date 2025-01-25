@@ -132,7 +132,7 @@ private:
         int root_x = seed_x;
         int root_y = seed_y;
 
-        // insertDocument(data, data_x, data_y, root_x, root_y);
+        insertDocument(data, data_x, data_y, root_x, root_y);
 
         int new_seed_x = boundingBox.x + boundingBox.width;
         int new_seed_y = boundingBox.y + boundingBox.height;
