@@ -99,7 +99,7 @@ private:
     std::condition_variable condition;
     std::atomic<bool> stopFlag;
 };
- 
+
 int main()
 {
     size_t cores = std::thread::hardware_concurrency();
@@ -120,7 +120,9 @@ int main()
             });
         }
 
-// prs(0);
+
+// pix_server pix;
+// pix.get_pix(186653,122646);
 
     return 0;
 }

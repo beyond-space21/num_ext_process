@@ -60,10 +60,7 @@ public:
 
         cv::Mat im = get_img(r_crd[2], r_crd[3]);
 
-        if (im.empty())
-        {   
-            throw ("imag error 678");
-        }
+        // cv::Mat im = get_img(x, y);
 
         return im.at<cv::Vec3b>(r_crd[1], r_crd[0]);
     }
@@ -109,6 +106,15 @@ public:
             sv = 0;
         }
 
+        if (img.empty())
+        {
+            std::cerr << "Error: " << x << "," << y << std::endl;
+
+            MongoDBClient client;
+            client.recErr(x,y);
+            img = whiteImage;
+        }
+
         if (tiles_sv[0])
             cv::imwrite(new_tiles + tiles_key[0] + ".png", tiles_val[0]);
 
@@ -138,6 +144,7 @@ private:
 
         return {pixx, pixy, tilex, tiley};
     }
+    
 };
 
 #endif
