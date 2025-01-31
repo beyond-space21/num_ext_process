@@ -68,7 +68,7 @@ public:
     void put_pix(int &x, int &y, const cv::Vec3b &pix)
     {
         std::vector r_crd = relative_cord(x, y);
-        get_img(r_crd[2], r_crd[3]).at<cv::Vec3b>(r_crd[1], r_crd[0]) = pix;
+        get_img(r_crd[2], r_crd[3],y).at<cv::Vec3b>(r_crd[1], r_crd[0]) = pix;
     }
 
     cv::Mat get_img(int &x, int &y, int &ref)
