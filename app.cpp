@@ -109,14 +109,19 @@ int main()
 
     std::vector<int> trk;
 
-    for (int e = 0; e < 256; e = e + 1)
-        for (int i = e; i < (383232); i = i + 256) //766464
+
+    //766464
+    int pix_frm = 0;
+    int pix_to = 383232;
+
+    for (int e = pix_frm; e < 256; e = e + 1)
+        for (int i = pix_frm; i < pix_to; i = i + 256) 
         {
             trk.push_back(i);
             std::cout << i / 256 << std::endl;
-            pool.enqueue([i] {
+            pool.enqueue([i,pix_to] {
                 prs(i);
-                std::cout << "completed: " << i << std::endl;
+                std::cout << "completed: " << (i/pix_to)*100 << "%" << std::endl;
             });
         }
 

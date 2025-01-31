@@ -36,7 +36,6 @@ public:
         int count = 0;
         for (y = y; y < total_height; y++)
         {
-
             cv::Vec3b pixel;
             try
             {
@@ -52,7 +51,6 @@ public:
             // std::cout << static_cast<int>(pixel[0]) <<  " " << static_cast<int>(pixel[2]) << " " << static_cast<int>(pixel[3]) << "\n";
             if (isSimilarToPurple(pixel))
             {
-                count++;
                 // std::vector<int> a = relative_cord(x,y);
                 // std::cout << a[0] << " " << a[1] << "\n";
                 // std::string h = "";
@@ -61,9 +59,6 @@ public:
                 y = nxt_sd[1];
             }
         }
-
-        std::cout << "count: " << count << std::endl;
-
         client.endTrack(x, y);
     }
 

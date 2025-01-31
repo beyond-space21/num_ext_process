@@ -53,12 +53,12 @@ public:
         std::cout << i[0] << " " << i[1] << " " << i[2] << " " << i[3] << " x:" << x << " y:" << y << "\n";
     }
 
-    cv::Vec3b get_pix(int x, int y)
+    cv::Vec3b get_pix(int x, int& y)
     {
         std::vector r_crd = relative_cord(x, y);
         // std::cout << r_crd[0] << " " << r_crd[1] << " " << r_crd[2] << " " << r_crd[3] << " x:" << x << " y:" << y << "\n";
 
-        cv::Mat im = get_img(r_crd[2], r_crd[3]);
+        cv::Mat im = get_img(r_crd[2], r_crd[3], y);
 
         // cv::Mat im = get_img(x, y);
 
@@ -71,7 +71,7 @@ public:
         get_img(r_crd[2], r_crd[3]).at<cv::Vec3b>(r_crd[1], r_crd[0]) = pix;
     }
 
-    cv::Mat get_img(int &x, int &y)
+    cv::Mat get_img(int &x, int &y, int &ref)
     {
         std::string st = std::to_string(x) + ',' + std::to_string(y);
         for (int i = 0; i < 5; i++)
@@ -79,10 +79,10 @@ public:
             if (tiles_key[i] == st)
                 return tiles_val[i];
         }
-        return load_img(x, y);
+        return load_img(x, y, ref);
     }
 
-    cv::Mat load_img(int &x, int &y)
+    cv::Mat load_img(int &x, int &y, int &ref)
     {
         std::string st = std::to_string(x) + ',' + std::to_string(y);
         bool sv = 1;
@@ -103,6 +103,7 @@ public:
         else
         {
             img = whiteImage;
+            ref = ref + 256;
             sv = 0;
         }
 
@@ -113,6 +114,7 @@ public:
             MongoDBClient client;
             client.recErr(x,y);
             img = whiteImage;
+            ref = ref + 256;
         }
 
         if (tiles_sv[0])
@@ -133,7 +135,7 @@ private:
     std::vector<std::string> tiles_key = {"", "", "", "", ""};
     std::vector<bool> tiles_sv = {0, 0, 0, 0, 0};
 
-    std::vector<int> relative_cord(int &x_, int &y_)
+    std::vector<int> relative_cord(int x_, int y_)
     {
 
         int tilex = int(pDiv(x_, 256)) + min_x;
