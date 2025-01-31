@@ -114,7 +114,7 @@ int main()
     int pix_frm = 0;
     int pix_to = 383232;
 
-    for (int e = pix_frm; e < 256; e = e + 1)
+    for (int e = pix_frm; e < 256; e = e + 6)
         for (int i = pix_frm; i < pix_to; i = i + 256) 
         {
             trk.push_back(i);
