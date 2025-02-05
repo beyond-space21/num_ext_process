@@ -37,7 +37,7 @@ del data
 
 def process(crd):
     x,y = crd
-    img = cv2.imread("tiles/"+x+"/"+y+".png")
+    img = cv2.imread("/root/tiles/"+x+"/"+y+".png")
     pullNumbers.process(img,x,y)
 
 

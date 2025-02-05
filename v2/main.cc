@@ -8,7 +8,7 @@
 namespace py = pybind11;
 namespace fs = std::filesystem;
 
-std::string tiles = "tiles/";
+std::string tiles = "/root/tiles/";
 
 cv::Mat whiteImage(256, 256, CV_8UC3, cv::Scalar(255, 255, 255));
 
@@ -211,7 +211,7 @@ int get_teritory(int seed_x, int seed_y, cv::Mat &img, image_server &ser)
         ser.realY--;
     }
 
-    std::string path = "nodes/"+std::to_string(ser.realX) + "/" + std::to_string(ser.realY);
+    std::string path = "/root/nodes/"+std::to_string(ser.realX) + "/" + std::to_string(ser.realY);
 
     if (!fs::exists(path))
     {
@@ -244,11 +244,11 @@ void process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
         }
     }
 
-    if (!fs::exists("bnk_tiles/"+std::to_string(tlX)))
+    if (!fs::exists("/root/bnk_tiles/"+std::to_string(tlX)))
     {
-        fs::create_directories("bnk_tiles/"+std::to_string(tlX));
+        fs::create_directories("/root/bnk_tiles/"+std::to_string(tlX));
     }
-    cv::imwrite("bnk_tiles/"+std::to_string(tlX)+"/"+std::to_string(tlY)+".png",image);
+    cv::imwrite("/root/bnk_tiles/"+std::to_string(tlX)+"/"+std::to_string(tlY)+".png",image);
 }
 
 PYBIND11_MODULE(pullNumbers, m)
