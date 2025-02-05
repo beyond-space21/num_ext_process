@@ -5,6 +5,11 @@ import json
 
 start = time.time()
 
+# img = cv2.imread("tiles/186586/122590.png")
+# pullNumbers.process(img,186586,122590)
+# cv2.imshow("img",img)
+# cv2.waitKey(0)
+
 with open("INNER_CORDS.json", "r") as file:
     data = json.loads(file.read())["cords"]
 
@@ -37,15 +42,27 @@ def process(tile):
 
 with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
     executor.map(process, p1, chunksize = int(len(p1)/20))
+end = time.time()
+print("p1",(end - start) * 10**3,"ms")
+print()
 
 with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
     executor.map(process, p2, chunksize = int(len(p2)/20))
+end = time.time()
+print("p2",(end - start) * 10**3,"ms")
+print()
 
 with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
     executor.map(process, p3, chunksize = int(len(p3)/20))
+end = time.time()
+print("p3",(end - start) * 10**3,"ms")
+print()
 
 with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
     executor.map(process, p4, chunksize = int(len(p4)/20))
+end = time.time()
+print("p4",(end - start) * 10**3,"ms")
+print()
 
 
 end = time.time()

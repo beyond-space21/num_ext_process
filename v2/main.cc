@@ -135,7 +135,7 @@ bool verify_pix(int x, int y, std::vector<cv::Point> &visited, cv::Mat &img, ima
     // }
     // else
     // {
-        pixel = img.at<cv::Vec3b>(y, x);
+    pixel = img.at<cv::Vec3b>(y, x);
     // }
 
     if (isSimilarToPurple(pixel))
@@ -200,27 +200,30 @@ int get_teritory(int seed_x, int seed_y, cv::Mat &img, image_server &ser)
     int num_x = boundingBox.x;
     int num_y = boundingBox.y;
 
-    if(boundingBox.x < 0){
-    num_x = 256+boundingBox.x;
-    ser.realX--;
-    }else
-    if(boundingBox.y < 0){
-    num_y = 256+boundingBox.y;
-    ser.realY--;
+    if (boundingBox.x < 0)
+    {
+        num_x = 256 + boundingBox.x;
+        ser.realX--;
+    }
+    else if (boundingBox.y < 0)
+    {
+        num_y = 256 + boundingBox.y;
+        ser.realY--;
     }
 
-    std::string path = std::to_string(ser.realX)+"/"+std::to_string(ser.realY);
+    std::string path = "nodes/"+std::to_string(ser.realX) + "/" + std::to_string(ser.realY);
 
-     if (!fs::exists(path)) {
+    if (!fs::exists(path))
+    {
         fs::create_directories(path);
     }
 
-    cv::imwrite(path+"/i"+std::to_string(num_x)+"_"+std::to_string(num_y)+".bmp",blankImage);
+    cv::imwrite(path + "/i" + std::to_string(num_x) + "_" + std::to_string(num_y) + ".bmp", blankImage);
 
     return boundingBox.x + boundingBox.width;
 }
 
-std::string process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
+void process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
 {
     std::vector<int> line_ind;
     py::buffer_info buf = input_image.request();
@@ -241,7 +244,11 @@ std::string process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
         }
     }
 
-    return "res";
+    if (!fs::exists("bnk_tiles/"+std::to_string(tlX)))
+    {
+        fs::create_directories("bnk_tiles/"+std::to_string(tlX));
+    }
+    cv::imwrite("bnk_tiles/"+std::to_string(tlX)+"/"+std::to_string(tlY)+".png",image);
 }
 
 PYBIND11_MODULE(pullNumbers, m)
