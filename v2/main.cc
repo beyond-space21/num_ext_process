@@ -3,12 +3,12 @@
 #include <pybind11/stl.h>
 #include <opencv2/opencv.hpp>
 #include <stack>
-#include <nlohmann/json.hpp>
+#include <filesystem>
 
 namespace py = pybind11;
-using json = nlohmann::json;
+namespace fs = std::filesystem;
 
-std::string tiles = "tilues/";
+std::string tiles = "tiles/";
 
 cv::Mat whiteImage(256, 256, CV_8UC3, cv::Scalar(255, 255, 255));
 
@@ -29,55 +29,6 @@ cv::Mat load_img(int x, int y)
         std::cerr << e.what() << '\n';
         return whiteImage;
     }
-}
-
-std::string base64_encode(const std::vector<uchar>& data) {
-
-    if (data.empty()) {
-    throw std::invalid_argument("Input data for base64 encoding is empty.");
-}
-
-    static const char s_encoding[] =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
-
-    std::string encoded;
-    int val = 0, valb = -6;
-    for (uchar c : data) {
-        val = (val << 8) + c;
-        valb += 8;
-        while (valb >= 0) {
-            encoded.push_back(s_encoding[(val >> valb) & 0x3F]);
-            valb -= 6;
-        }
-    }
-    if (valb > -6) encoded.push_back(s_encoding[((val << 8) >> valb) & 0x3F]);
-    while (encoded.size() % 4) encoded.push_back('=');
-    return encoded;
-}
-
-std::string image_to_data_url(const cv::Mat& image) {
-    // if (image.empty()) {
-    //     throw std::invalid_argument("Image is empty or not loaded correctly.");
-    // }
-
-    // Encode the image to PNG format
-    std::vector<uchar> buffer;
-    std::vector<int> params = { cv::IMWRITE_PNG_COMPRESSION, 9 }; // PNG compression level
-    cv::imencode(".png", image, buffer, params);
-
-    if (buffer.empty()) {
-    throw std::runtime_error("Failed to encode image to PNG format.");
-}
-
-    // Encode buffer to base64
-    std::string base64_data = base64_encode(buffer);
-
-    // Create Data URL
-    base64_data = "data:image/png;base64," + base64_data;
-
-    return base64_data;
 }
 
 class image_server
@@ -136,11 +87,10 @@ public:
 
         return cv::Vec3b(255, 255, 255);
     }
-
-private:
     int realX;
     int realY;
 
+private:
     // cv::Mat top_left;
     // cv::Mat top;
     // cv::Mat top_right;
@@ -178,15 +128,15 @@ bool verify_pix(int x, int y, std::vector<cv::Point> &visited, cv::Mat &img, ima
 
     cv::Vec3b pixel;
 
-    if (x < 0 || x > 255 || y < 0 || y > 255)
-    {
-        std::cout << "getting: " << x << " " << y << std::endl;
-        pixel = ser.get_pix(x, y);
-    }
-    else
-    {
+    // if (x < 0 || x > 255 || y < 0 || y > 255)
+    // {
+    //     std::cout << "getting: " << x << " " << y << std::endl;
+    //     pixel = ser.get_pix(x, y);
+    // }
+    // else
+    // {
         pixel = img.at<cv::Vec3b>(y, x);
-    }
+    // }
 
     if (isSimilarToPurple(pixel))
     {
@@ -195,7 +145,7 @@ bool verify_pix(int x, int y, std::vector<cv::Point> &visited, cv::Mat &img, ima
     return false;
 }
 
-std::vector<int> get_teritory(int seed_x, int seed_y, cv::Mat &img, image_server &ser)
+int get_teritory(int seed_x, int seed_y, cv::Mat &img, image_server &ser)
 {
     std::stack<std::pair<int, int>> to_visit;
     std::vector<cv::Point> visited;
@@ -247,16 +197,30 @@ std::vector<int> get_teritory(int seed_x, int seed_y, cv::Mat &img, image_server
     // int root_x = seed_x;
     // int root_y = seed_y;
 
-    json response;
-    response["next_x"] = boundingBox.x + boundingBox.width;
-    response["image"] = image_to_data_url(img);
-    response["pos_x"] = boundingBox.x;
-    response["pos_y"] = boundingBox.y;
+    int num_x = boundingBox.x;
+    int num_y = boundingBox.y;
 
-    return {boundingBox.x + boundingBox.width};
+    if(boundingBox.x < 0){
+    num_x = 256+boundingBox.x;
+    ser.realX--;
+    }else
+    if(boundingBox.y < 0){
+    num_y = 256+boundingBox.y;
+    ser.realY--;
+    }
+
+    std::string path = std::to_string(ser.realX)+"/"+std::to_string(ser.realY);
+
+     if (!fs::exists(path)) {
+        fs::create_directories(path);
+    }
+
+    cv::imwrite(path+"/i"+std::to_string(num_x)+"_"+std::to_string(num_y)+".bmp",blankImage);
+
+    return boundingBox.x + boundingBox.width;
 }
 
-std::vector<int> process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
+std::string process(const py::array_t<uint8_t> &input_image, int tlX, int tlY)
 {
     std::vector<int> line_ind;
     py::buffer_info buf = input_image.request();
@@ -264,18 +228,20 @@ std::vector<int> process(const py::array_t<uint8_t> &input_image, int tlX, int t
 
     image_server ser(tlX, tlY);
 
+    std::string res;
+
     for (int y = 0; y < 256; y = y + 8)
     {
         for (int x = 0; x < 256; x++)
         {
             if (isSimilarToPurple(image.at<cv::Vec3b>(y, x)))
             {
-                x = get_teritory(x, y, image, ser)[0];
+                x = get_teritory(x, y, image, ser);
             }
         }
     }
 
-    return line_ind;
+    return "res";
 }
 
 PYBIND11_MODULE(pullNumbers, m)
