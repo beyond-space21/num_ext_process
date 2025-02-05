@@ -31,6 +31,32 @@ cv::Mat load_img(int x, int y)
     }
 }
 
+std::string base64_encode(const std::vector<uchar>& data) {
+
+    if (data.empty()) {
+    throw std::invalid_argument("Input data for base64 encoding is empty.");
+}
+
+    static const char s_encoding[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
+
+    std::string encoded;
+    int val = 0, valb = -6;
+    for (uchar c : data) {
+        val = (val << 8) + c;
+        valb += 8;
+        while (valb >= 0) {
+            encoded.push_back(s_encoding[(val >> valb) & 0x3F]);
+            valb -= 6;
+        }
+    }
+    if (valb > -6) encoded.push_back(s_encoding[((val << 8) >> valb) & 0x3F]);
+    while (encoded.size() % 4) encoded.push_back('=');
+    return encoded;
+}
+
 std::string image_to_data_url(const cv::Mat& image) {
     // if (image.empty()) {
     //     throw std::invalid_argument("Image is empty or not loaded correctly.");
