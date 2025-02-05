@@ -2,6 +2,7 @@ import pullNumbers
 import cv2
 import time
 import json
+from multiprocessing import Pool
 
 start = time.time()
 
@@ -33,36 +34,33 @@ for x,y in data:
 print(len(p1),len(p2),len(p3),len(p4))
 del data
 
-import concurrent.futures
-def process(tile):
-    x,y = tile
+
+def process(crd):
+    x,y = crd
     img = cv2.imread("tiles/"+x+"/"+y+".png")
     pullNumbers.process(img,x,y)
 
 
-with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
-    executor.map(process, p1, chunksize = int(len(p1)/20))
-end = time.time()
-print("p1",(end - start) * 10**3,"ms")
-print()
+# def shd(arr):
+    # ckn = int(len(arr)/20)
+    # batch = []
+    # temp = []
+    # for i in arr:
+    #     if len(temp) > ckn:
+    #         batch.append(temp)
+    #         temp = []
+    #     else:
+    #         temp.append(i)
+    # batch.append(temp)
 
-with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
-    executor.map(process, p2, chunksize = int(len(p2)/20))
-end = time.time()
-print("p2",(end - start) * 10**3,"ms")
-print()
+    # for i in range(len(batch)):
+    #     for job in batch[i]:
+    #         prs1 = multiprocessing.Process(target=process, args=(job[0],job[1]))
 
-with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
-    executor.map(process, p3, chunksize = int(len(p3)/20))
-end = time.time()
-print("p3",(end - start) * 10**3,"ms")
-print()
 
-with concurrent.futures.ProcessPoolExecutor(max_workers=20) as executor:
-    executor.map(process, p4, chunksize = int(len(p4)/20))
-end = time.time()
-print("p4",(end - start) * 10**3,"ms")
-print()
+
+with Pool(processes=20) as pool:
+    pool.map(process, p1, chunksize=int(len(p1)/20))
 
 
 end = time.time()
