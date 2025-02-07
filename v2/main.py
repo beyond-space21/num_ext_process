@@ -35,32 +35,27 @@ print(len(p1),len(p2),len(p3),len(p4))
 del data
 
 
-def process(crd):
-    x,y = crd
-    img = cv2.imread("/root/tiles/"+x+"/"+y+".png")
-    pullNumbers.process(img,x,y)
+
+with open("p1.json","w") as file:
+    file.write(json.dumps({"data":p1}))
+
+with open("p2.json","w") as file:
+    file.write(json.dumps({"data":p1}))
+
+with open("p3.json","w") as file:
+    file.write(json.dumps({"data":p1}))
+
+with open("p4.json","w") as file:
+    file.write(json.dumps({"data":p1}))
 
 
-# def shd(arr):
-    # ckn = int(len(arr)/20)
-    # batch = []
-    # temp = []
-    # for i in arr:
-    #     if len(temp) > ckn:
-    #         batch.append(temp)
-    #         temp = []
-    #     else:
-    #         temp.append(i)
-    # batch.append(temp)
-
-    # for i in range(len(batch)):
-    #     for job in batch[i]:
-    #         prs1 = multiprocessing.Process(target=process, args=(job[0],job[1]))
+# def process(crd):
+#     x,y = crd
+#     img = cv2.imread("/root/tiles/"+x+"/"+y+".png")
+#     pullNumbers.process(img,x,y)
 
 
 
-with Pool(processes=20) as pool:
-    pool.map(process, p1, chunksize=int(len(p1)/20))
 
 
 end = time.time()

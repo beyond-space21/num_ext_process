@@ -1,6 +1,14 @@
-g++ -O3 -Wall -shared -std=c++17 -fPIC \
-    $(python3 -m pybind11 --includes) \
+# g++ -O3 -Wall -shared -std=c++17 -fPIC \
+#     $(python3 -m pybind11 --includes) \
+#     -I/usr/include/opencv4 \
+#     -Iinclude \
+#     main.cc -o pullNumbers$(python3-config --extension-suffix) \
+#     -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
+
+
+g++ \
     -I/usr/include/opencv4 \
     -Iinclude \
-    main.cc -o pullNumbers$(python3-config --extension-suffix) \
+    -I. \
+    main.cc -o app \
     -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_imgcodecs
