@@ -96,16 +96,14 @@ private:
 
 void prs(int x, int y)
 {
-    try
+
+    cv::Mat image = cv::imread("tiles/" + std::to_string(x) + "/" + std::to_string(y) + ".png");
+    if (image.empty())
     {
-        cv::Mat image = cv::imread("tiles/" + std::to_string(x) + "/" + std::to_string(y) + ".png");
-        process(image, x, y);
-        std::cout << "completed: " << x << " | " << y << std::endl;
+        throw("err");
     }
-    catch (const std::exception &e)
-    {
-        std::cerr << "func:prs | " << e.what() << '\n';
-    }
+    process(image, x, y);
+    std::cout << "completed: " << x << " | " << y << std::endl;
 }
 
 int main()
@@ -114,10 +112,10 @@ int main()
     ThreadPool pool(20);
 
     std::ifstream MyReadFile("p1.json");
-    std::string prs;
-    while (getline(MyReadFile, prs))
+    std::string s;
+    while (getline(MyReadFile, s))
         ;
-    auto data = json::parse(prs)["data"];
+    auto data = json::parse(s)["data"];
 
     std::cout << data.size() << std::endl;
 
